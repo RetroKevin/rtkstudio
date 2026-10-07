@@ -35,7 +35,8 @@ affiliated with them.
 - The install folder must contain `RTKRES.bin`. GOG also ships `RTKRES.h`
   beside it. The studio uses that header for resource names.
 - Windows 10 or 11, with the Edge WebView2 runtime. That runtime is already
-  present on current Windows 10 and 11.
+  present on current Windows 10 and 11. Or Linux, using the Linux download
+  below. The editor runs there. The game executable does not.
 
 The program looks for an install in this order:
 
@@ -50,9 +51,33 @@ file inside it.
 
 ## Download and first launch
 
-The Windows build is the `RtKStudio` release on this repository. Unpack the
-zip and run `rtkstudio.exe`. The gold K with a wrench is the studio. It is
-the editor, not the game.
+Both builds are on the releases page of this same repository. The gold K
+with a wrench is the studio. It is the editor, not the game.
+
+**Windows.** Download `RtKStudio-1.0.0-windows.zip`, unpack it, and run
+`rtkstudio.exe`.
+
+**Linux.** Download `RtKStudio-linux-x64.tar.gz`, unpack it, and follow
+`LINUX.txt` in that folder. In short:
+
+```sh
+sudo apt install gir1.2-gtk-3.0 gir1.2-webkit2-4.1
+chmod +x rtkstudio
+./rtkstudio
+```
+
+That archive is built on Ubuntu 24.04. It runs on Ubuntu 24.04, Ubuntu 26.04,
+and other systems with glibc 2.39 or newer, after WebKitGTK 4.1 is installed.
+Ubuntu 22.04 and other distributions should build it on that machine instead:
+
+```sh
+sh packaging/build-linux.sh
+```
+
+The game install is the Windows GOG copy either way. On Linux, point the
+editor at the folder that contains `RTKRES.bin`. Build and Export patch work
+there. Play starts `RtK.exe`, which is a Windows program, so use Play on
+Windows.
 
 On the first launch, choose the GOG install if the program does not find it.
 The choice is remembered. The studio then indexes the install. That index is
@@ -150,7 +175,8 @@ python tools/modproject.py --mod path\to\their-mod --game "D:\GOG\Return To Kron
 **Play** builds that separate copy, turns on the game's developer start
 options in that copy, and launches the copy. From the scene studio it can
 start at the open chapter and scene. Play refuses to write the developer
-change onto the installed `RtK.exe`. Only the copy is touched.
+change onto the installed `RtK.exe`. Only the copy is touched. Play is a
+Windows action, because it starts `RtK.exe`.
 
 Playing the original GOG game on a modern widescreen monitor is a different
 project: [return-to-krondor-display](https://github.com/RetroKevin/return-to-krondor-display).
@@ -165,6 +191,9 @@ That patch is not part of RtKStudio, and RtKStudio does not include it.
 | Asset index | `%LOCALAPPDATA%\RtKStudio\assetdb.json` | `out\assetdb.json` in this repo |
 | Modded game | `out\builds\<name>` in the working directory | same |
 | Patch zip | `out\patches\<name>.rtkmod.zip` | same |
+
+On Linux those three user-data files live under `~/.local/share/rtkstudio/`
+instead of `%LOCALAPPDATA%\RtKStudio`.
 
 A mod directory looks like this:
 
@@ -204,9 +233,11 @@ unless you pass one:
 python tools/viewer.py --game "D:\GOG\Return To Krondor" --mod mods\my-mod
 ```
 
-On Linux, install WebKitGTK (`gir1.2-webkit2-4.1` on Ubuntu 22.04 and Debian,
-`webkit2gtk4.1` on Fedora) and run the same command. From source you also
-want `python3-gi`, and `python3-tk` for the folder dialog.
+On Linux, install WebKitGTK (`gir1.2-webkit2-4.1` on Ubuntu 24.04 and Debian,
+`gir1.2-webkit2-4.0` on Ubuntu 22.04, `webkit2gtk4.1` on Fedora) and
+`python3-tk` for the folder dialog, then run the same command. Or run
+`sh packaging/build-linux.sh`, which installs those packages and produces
+`dist/rtkstudio/rtkstudio`.
 
 ## Build the Windows program
 

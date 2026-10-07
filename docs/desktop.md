@@ -44,18 +44,24 @@ use VLC or ffmpeg on PATH; they are not bundled.
 For a debug build that keeps a terminal, set `CONSOLE = True` at the top of
 [packaging/rtkstudio.spec](../packaging/rtkstudio.spec) and rebuild.
 
-## Linux zip
+## Linux
 
-Build on Linux the same way (`pip install` then `pyinstaller packaging/rtkstudio.spec`).
-Ship `dist/rtkstudio/`. The binary needs WebKitGTK on the machine:
+The published archive is built on Ubuntu 24.04 by
+`.github/workflows/linux.yml` and attached to the GitHub release as
+`RtKStudio-linux-x64.tar.gz`. It needs WebKitGTK 4.1 and glibc 2.39 or newer.
+`packaging/LINUX.txt` is the note packed next to the binary.
 
-- Ubuntu 22.04+ / Debian: `gir1.2-webkit2-4.1`
-- Older Ubuntu: `gir1.2-webkit2-4.0`
-- Fedora: `webkit2gtk4.1`
+To build on the machine that will run it, including Ubuntu 22.04:
 
-From source you also want `python3-gi` (and `python3-tk` for the first-run
-folder dialog). A PyInstaller build embeds Python; it still needs the
-WebKitGTK system library.
+```
+sh packaging/build-linux.sh
+```
+
+That installs GTK, WebKitGTK, and the Python packages, then writes
+`dist/rtkstudio/`. The binary still needs the system WebKitGTK library.
+WebKit 4.1 is `gir1.2-webkit2-4.1` on Ubuntu 24.04 and Debian, and
+`webkit2gtk4.1` on Fedora. Ubuntu 22.04 has `gir1.2-webkit2-4.0` instead.
+The folder dialog also wants `python3-tk`.
 
 ## How this differs from `viewer.py`
 

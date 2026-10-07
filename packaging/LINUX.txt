@@ -1,0 +1,36 @@
+RtKStudio for Linux
+
+This folder is the editor. It does not contain Return to Krondor.
+
+1. Install the window library once.
+
+   Ubuntu 24.04, Ubuntu 26.04, and Debian with WebKitGTK 4.1:
+
+     sudo apt install gir1.2-gtk-3.0 gir1.2-webkit2-4.1
+
+   Fedora:
+
+     sudo dnf install gtk3 webkit2gtk4.1
+
+2. Start the editor from this folder:
+
+     chmod +x rtkstudio
+     ./rtkstudio
+
+   Or point it at the game directly:
+
+     ./rtkstudio --game "/path/to/Return To Krondor"
+
+3. Choose the folder from your legal GOG v1.00.6 install that contains
+   RTKRES.bin.
+
+The game itself is a Windows program. This editor reads and edits those
+files on Linux. The Play button starts RtK.exe, so use that on Windows.
+Build and Export patch work here. Edits are stored in
+~/.local/share/rtkstudio/. The GOG folder is not modified.
+
+This copy was built on Ubuntu 24.04. It needs glibc 2.39 or newer, which
+Ubuntu 24.04 and 26.04 have. Ubuntu 22.04 and other distributions should
+build it locally instead. From a clone of the source repository:
+
+     sh packaging/build-linux.sh

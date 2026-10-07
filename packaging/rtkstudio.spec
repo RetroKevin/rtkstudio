@@ -10,6 +10,7 @@ Output is dist/rtkstudio/ (onedir). Zip that folder to ship.
 Flip CONSOLE to True for a debug build that keeps a terminal.
 """
 
+import sys
 from pathlib import Path
 
 from PyInstaller.utils.hooks import collect_data_files, collect_submodules
@@ -62,15 +63,18 @@ hidden = [
     "tkinter.filedialog",
     "viewer",
 ]
-hidden += collect_submodules("webview")
+hidden += collect_submodules("webview", on_error="ignore")
 # pywebview backends: Edge WebView2 on Windows (pythonnet), GTK on Linux.
 hidden += [
     "bottle",
-    "clr",
-    "clr_loader",
     "proxy_tools",
-    "pythonnet",
 ]
+if sys.platform == "win32":
+    hidden += [
+        "clr",
+        "clr_loader",
+        "pythonnet",
+    ]
 
 datas = [(str(WEB), "web")]
 datas += [(str(ROOT / "packaging" / "rtkstudio.ico"), ".")]
