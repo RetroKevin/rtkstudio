@@ -1,0 +1,5 @@
+# Window host (runtime) and packager (dev). The viewer itself stays
+# stdlib besides pywebview. Install on the OS you will build for:
+# PyInstaller does not cross-compile.
+pywebview>=5,<6
+pyinstaller>=6,<7

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Return to Krondor &mdash; asset browser</title>
+<link rel="stylesheet" href="/static/style.css?v=39">
+</head>
+<body>
+<script>
+(function () {
+  try {
+    var theme = localStorage.getItem("rtk-theme") || "dark";
+    var scale = localStorage.getItem("rtk-scale") || "1";
+    document.documentElement.setAttribute("data-theme", theme);
+    document.documentElement.style.zoom = scale;
+  } catch (e) {}
+})();
+</script>
+
+<header>
+  <h1>Return to Krondor</h1>
+  <div id="summary" class="muted">waiting for the local viewer&hellip;</div>
+  <nav class="studioswitch" aria-label="Studios">
+    <button id="openassets" type="button">Assets</button>
+    <button id="openchars" type="button">Character</button>
+    <button id="openitems" type="button">Items</button>
+    <button id="openscenes" type="button">Scene</button>
+    <button id="openui" type="button">UI</button>
+    <button id="opendialog" type="button">Dialog</button>
+    <button id="opencombat" type="button">Combat</button>
+    <button id="opentraps" type="button">Traps</button>
+    <button id="openfx" type="button">Effects</button>
+    <button id="openalchemy" type="button">Alchemy</button>
+    <button id="openshops" type="button">Shops</button>
+  </nav>
+  <div class="spacer"></div>
+  <div id="modbar" class="modbar hidden">
+    <span id="modname"></span>
+    <span id="modcount" class="pill">0 edits</span>
+    <button id="histundo" type="button" title="Undo">Undo</button>
+    <button id="histredo" type="button" title="Redo">Redo</button>
+    <button id="histhist" type="button" title="History">History</button>
+    <button id="build">Build modded copy</button>
+    <button id="play" type="button" title="Build the modded copy, enable the developer flag, and launch. From the scene studio this starts at the open scene.">Play</button>
+    <button id="patch">Export patch</button>
+  </div>
+  <label class="chrome">theme
+    <select id="uitheme" aria-label="Theme">
+      <option value="dark">Dark</option>
+      <option value="light">Light</option>
+    </select>
+  </label>
+  <label class="chrome">scale
+    <select id="uiscale" aria-label="UI scale">
+      <option value="1">100%</option>
+      <option value="1.15">115%</option>
+      <option value="1.25">125%</option>
+      <option value="1.5">150%</option>
+    </select>
+  </label>
+  <label class="chrome">layout
+    <select id="uilayout" aria-label="Layout"></select>
+  </label>
+  <input id="layoutname" class="chrome-name" placeholder="name" aria-label="Layout name">
+  <button id="layoutsave" type="button" title="Save which studio is open and the pane widths">Save layout</button>
+  <div id="histpanel" class="histpanel hidden"></div>
+</header>
+
+<main>
+  <section id="detail">
+    <div class="empty">
+      <p>Open a studio to start.</p>
+      <button id="openassets2" type="button" class="primary">Assets</button>
+      <button id="openchars2" type="button">Character</button>
+      <button id="openitems2" type="button">Items</button>
+      <button id="openscenes2" type="button">Scene</button>
+      <button id="openui2" type="button">UI</button>
+      <button id="opendialog2" type="button">Dialog</button>
+      <button id="opencombat2" type="button">Combat</button>
+      <button id="opentraps2" type="button">Traps</button>
+      <button id="openfx2" type="button">Effects</button>
+      <button id="openalchemy2" type="button">Alchemy</button>
+      <button id="openshops2" type="button">Shops</button>
+    </div>
+  </section>
+</main>
+
+<div id="toast" class="hidden"></div>
+<script>
+// These files are served by tools/viewer.py. Opening index.html from disk
+// (or Cursor's file preview) never reaches /api, so the page used to sit
+// on the placeholder forever. Say so before app.js even has a chance.
+(function () {
+  if (location.protocol === "file:" || !location.port) {
+    var el = document.getElementById("summary");
+    if (el) el.textContent =
+      "Open http://127.0.0.1:8765/ — this HTML is not the app on its own.";
+  }
+})();
+</script>
+<script src="/static/vendor/three.min.js"></script>
+<script src="/static/vendor/OrbitControls.js"></script>
+<script src="/static/viewer3d.js?v=18"></script>
+<script src="/static/creator.js?v=15"></script>
+<script src="/static/app.js?v=28"></script>
+<script src="/static/studios.js?v=41"></script>
+</body>
+</html>

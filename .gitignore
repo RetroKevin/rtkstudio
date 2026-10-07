@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Produced on your machine from your own install. Do not commit these.
+/out/
+/mods/
+/dist/
+/build/
+
+# A game install must never be added to this repository.
+RTKRES.bin
+RTKRES.000
+RTKRES.h
+*.t3d
