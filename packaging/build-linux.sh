@@ -20,7 +20,7 @@ fi
 python3 -m venv .venv
 . .venv/bin/activate
 python -m pip install --upgrade pip
-python -m pip install "PyGObject>=3.48"
+python -m pip install "PyGObject>=3.48,<3.52"
 python -m pip install -r requirements-desktop.txt
 python -m PyInstaller packaging/rtkstudio.spec --noconfirm
 cp packaging/LINUX.txt dist/rtkstudio/LINUX.txt
