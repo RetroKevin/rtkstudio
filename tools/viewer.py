@@ -1029,17 +1029,13 @@ class Handler(BaseHTTPRequestHandler):
         out = self.app.mod.default_output()
         report = self.app.mod.build(self.app.db, out)
         out = Path(report["output"])
-        exe = out / "RtK.exe"
-        if not exe.is_file():
-            exe = next((p for p in out.glob("*.exe")
-                        if p.name.lower() == "rtk.exe"), None)
-        if exe is None:
-            return self._error(500, "Build finished but RtK.exe is not in %s" % out)
         import rtklaunch
         import rtkframe
         try:
-            changed = rtklaunch.enable_developer(exe, self.app.db.game)
+            game_exe = rtklaunch.game_binary(out)
+            changed = rtklaunch.enable_developer(game_exe, self.app.db.game)
             tail = rtklaunch.launch_args(doc.get("chapter"), doc.get("scene"))
+            exe = rtklaunch.launch_binary(out)
             rtkframe.launch(exe, tail, out)
         except (OSError, RuntimeError, TypeError, ValueError) as exc:
             return self._error(500, str(exc))

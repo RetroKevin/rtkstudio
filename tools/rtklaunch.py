@@ -37,19 +37,50 @@ def _sites(blob: bytes):
     return out
 
 
+def game_binary(folder) -> Path:
+    """The retail image in a folder.
+
+    After the display patch, RtK.exe is a small launcher and the game is
+    RtKGame.exe. An untouched GOG folder still has the game in RtK.exe.
+    """
+    folder = Path(folder)
+    named = folder / "RtKGame.exe"
+    if named.is_file() and named.stat().st_size > 1_000_000:
+        return named
+    plain = folder / "RtK.exe"
+    if plain.is_file() and plain.stat().st_size > 1_000_000:
+        return plain
+    raise FileNotFoundError(
+        "No game executable in %s. Expected RtKGame.exe, or RtK.exe larger than 1 MB."
+        % folder)
+
+
+def launch_binary(folder) -> Path:
+    """What to start. The small RtK.exe forwards its arguments to RtKGame.exe."""
+    folder = Path(folder)
+    launcher = folder / "RtK.exe"
+    if launcher.is_file():
+        return launcher
+    return game_binary(folder)
+
+
 def enable_developer(exe, game_root) -> int:
     """Patch `exe` so the developer compares succeed. Returns sites changed."""
     exe = Path(exe).resolve()
-    install = (Path(game_root) / "RtK.exe").resolve()
-    if exe == install:
-        raise RuntimeError("refusing to patch the installed RtK.exe")
-    if exe.name.lower() != "rtk.exe":
-        raise RuntimeError("developer patch expects RtK.exe, got %s" % exe.name)
+    root = Path(game_root).resolve()
+    installed = [p.resolve() for name in ("RtK.exe", "RtKGame.exe")
+                 if (p := (root / name)).is_file()]
+    if exe in installed:
+        raise RuntimeError("refusing to patch the installed game")
+    if exe.name.lower() not in ("rtk.exe", "rtkgame.exe"):
+        raise RuntimeError(
+            "developer patch expects the game executable, got %s" % exe.name)
     blob = bytearray(exe.read_bytes())
     sites = _sites(blob)
     if len(sites) < 30:
         raise RuntimeError(
-            "RtK.exe does not have the expected developer compares (%d)" % len(sites))
+            "%s does not have the expected developer compares (%d)"
+            % (exe.name, len(sites)))
     changed = 0
     for imm, already in sites:
         if already:
