@@ -40,6 +40,8 @@ hidden = [
     "rtkdialog",
     "rtkfind",
     "rtklaunch",
+    "rtklaunchcfg",
+    "rtkpaths",
     "rtkframe",
     "rtkdib",
     "rtkfx",

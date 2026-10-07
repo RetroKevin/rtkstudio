@@ -79,6 +79,16 @@ header h1 { font-size: 15px; margin: 0; letter-spacing: .04em; color: var(--acce
 .small { font-size: 12px; }
 .hidden { display: none !important; }
 
+.pathfix {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--warn);
+}
+.pathfix p { margin: 0; flex: 1; font-size: 13px; }
+
 .modbar { display: flex; align-items: center; gap: 8px; }
 .pill {
   background: var(--edge); border-radius: 10px;

@@ -1910,6 +1910,122 @@ async function patch() {
 
 // --- boot ----------------------------------------------------------------
 
+function paintPaths(report) {
+  const bar = $("pathfix");
+  const text = $("pathfixtext");
+  const button = $("pathfixgo");
+  if (!bar || !report) return;
+  if (!report.present) {
+    bar.classList.add("hidden");
+    return;
+  }
+  if (report.needs_fix) {
+    text.textContent = report.dotted
+      ? ("The folder " + report.dotted + " contains a period. The game cuts a " +
+         "path at the last period, so a conversation crashes while opening its " +
+         "voice file. Fix folder paths makes " + report.clean_launch +
+         " as a second name for this install and points the ini there. Start " +
+         "RtK.exe from that folder. Steam's Play button still starts the original path.")
+      : ("RTKRONDOR.INI points the voice tracks at a relative Tracks folder. " +
+         "Steam often starts the game from another working directory, so a .trx file " +
+         "fails to open. Fix folder paths writes absolute paths into that ini and " +
+         "leaves FixDirectories.bat in the game folder. Run that again if Steam " +
+         "verify restores the ini.");
+    button.classList.remove("hidden");
+    bar.classList.remove("hidden");
+    return;
+  }
+  if (report.missing_folders && report.missing_folders.length) {
+    text.textContent =
+      "The folder paths in RTKRONDOR.INI are set, and these folders are missing: " +
+      report.missing_folders.join(", ") +
+      ". Verify the game files in Steam, then start the game again.";
+    button.classList.add("hidden");
+    bar.classList.remove("hidden");
+    return;
+  }
+  bar.classList.add("hidden");
+}
+
+async function checkPaths() {
+  try {
+    paintPaths(await api("/api/paths"));
+  } catch (e) {
+    /* the studios still work if this ini cannot be read */
+  }
+}
+
+function paintLaunch(report) {
+  const bar = $("launchfix");
+  const text = $("launchfixtext");
+  const button = $("launchfixgo");
+  if (!bar || !report || !report.present) {
+    if (bar) bar.classList.add("hidden");
+    return;
+  }
+  const parts = [];
+  if (report.needs_repair) {
+    parts.push(
+      "RTKRONDOR.INI asks for a hardware 3D driver. On current Windows that " +
+      "call crashes inside the graphics driver and the game reports that an " +
+      "error prevents it from continuing. Repair launch settings switches to " +
+      "the software renderer and keeps the folder paths.");
+  }
+  (report.warnings || []).forEach((line) => parts.push(line));
+  if (!parts.length) {
+    bar.classList.add("hidden");
+    return;
+  }
+  text.textContent = parts.join(" ");
+  button.classList.toggle("hidden", !report.needs_repair);
+  bar.classList.remove("hidden");
+}
+
+async function checkLaunch() {
+  try {
+    paintLaunch(await api("/api/launch"));
+  } catch (e) {
+    /* studios still open if this ini cannot be read */
+  }
+}
+
+async function fixLaunch() {
+  const button = $("launchfixgo");
+  if (button) button.disabled = true;
+  try {
+    const report = await api("/api/launch", { method: "POST" });
+    paintLaunch(report);
+    if (report.error) toast(report.error, true);
+    else if (report.wrote) {
+      toast("Launch settings now use the software renderer. A backup is " +
+            (report.backup || "already saved") + ".");
+    } else toast("Launch settings were already the software renderer.");
+  } catch (e) {
+    toast("Could not update RTKRONDOR.INI: " + e.message, true);
+  }
+  if (button) button.disabled = false;
+}
+
+async function fixPaths() {
+  const button = $("pathfixgo");
+  if (button) button.disabled = true;
+  try {
+    const report = await api("/api/paths", { method: "POST" });
+    paintPaths(report);
+    if (report.error) {
+      toast(report.error, true);
+    } else if (report.wrote) {
+      toast("Folder paths now point at this install. A backup is " +
+            (report.backup || "already saved") + ".");
+    } else {
+      toast("Folder paths were already set.");
+    }
+  } catch (e) {
+    toast("Could not update RTKRONDOR.INI: " + e.message, true);
+  }
+  if (button) button.disabled = false;
+}
+
 async function init() {
   const c = await api("/api/counts");
   state.counts = c;
@@ -1920,6 +2036,10 @@ async function init() {
     Object.entries(c.by_source).map(([k, v]) => `${v.toLocaleString()} ${k}`).join(" \u00b7 ");
   applyChrome();
   await refreshMod();
+  await checkPaths();
+  await checkLaunch();
+  if ($("pathfixgo")) $("pathfixgo").onclick = fixPaths;
+  if ($("launchfixgo")) $("launchfixgo").onclick = fixLaunch;
 
   $("build").onclick = build;
   if ($("play")) $("play").onclick = playGame;

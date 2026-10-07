@@ -331,6 +331,14 @@ class Handler(BaseHTTPRequestHandler):
                 "palette": [list(c) for c in pal],
             })
 
+        if path == "/api/paths":
+            import rtkpaths
+            return self._json(rtkpaths.inspect_directories(self.app.game))
+
+        if path == "/api/launch":
+            import rtklaunchcfg
+            return self._json(rtklaunchcfg.inspect_launch(self.app.game))
+
         if path == "/api/counts":
             c = self.app.db.counts()
             c["game"] = str(self.app.game)
@@ -768,6 +776,14 @@ class Handler(BaseHTTPRequestHandler):
 
         if path == "/api/find/replace":
             return self._find_replace(json.loads(self._body() or b"{}"))
+
+        if path == "/api/paths":
+            import rtkpaths
+            return self._json(rtkpaths.apply_directories(self.app.game))
+
+        if path == "/api/launch":
+            import rtklaunchcfg
+            return self._json(rtklaunchcfg.apply_launch(self.app.game))
 
         if path == "/api/build":
             out = Path(q.get("out") or self.app.mod.default_output())

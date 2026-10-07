@@ -501,6 +501,16 @@ class ModProject:
             report["containers"]["RTKRES"] = rtkres_write.rebuild(
                 game / "RTKRES.bin", out / "RTKRES.bin", out / "RTKRES.000", res_repl)
 
+        # The copy must look up Tracks and the other folders inside itself.
+        # An ini copied from Steam still has .\Tracks\, and one copied from
+        # a GOG install still has that machine's absolute paths.
+        try:
+            import rtkpaths
+            report["directories"] = rtkpaths.apply_directories(
+                out, backup=False, helper=False, force=True)
+        except OSError as exc:
+            report["directories"] = {"error": str(exc)}
+
         return report
 
     def export_patch(self, dst: Path) -> dict:

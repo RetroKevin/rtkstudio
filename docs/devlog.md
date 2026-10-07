@@ -1,0 +1,16 @@
+# RtKStudio dev log
+
+Notes for the next GitHub release. The last build uploaded is **v1.2.0**.
+
+When that release is published, move everything under Unreleased into the
+release text, then leave Unreleased empty for the next round of work.
+
+## Unreleased
+
+## v1.2.0
+
+- Folder paths. Steam's `RTKRONDOR.INI` often has `TrackDir=.\Tracks\`. The game uses that string as written, and Steam's working directory is not the install, so voice files fail with "an error occurred while trying to read the game file: .trx". The studio shows **Fix folder paths** when those `[Directories]` entries are relative, or when they name a folder that is not there. The repair writes absolute paths, keeps the first copy as `RTKRONDOR.INI.rtkstudio-bak`, and leaves `FixDirectories.bat` in the game folder for the next time Steam verify restores the ini. An absolute path that already exists is left alone, including a GOG ini that points at another drive. A mod build points the copy's ini at the copy.
+- The same repair is also a separate installer, so players do not need RtKStudio. It is https://github.com/RetroKevin/return-to-krondor-paths (`Apply.bat`). That download is not part of the studio zip.
+- Launch settings. `Engine=1` with a Driver guid sends startup into the graphics driver's DLL, and the game reports that an error prevents it from continuing. The studio offers **Repair launch settings**, which writes the software renderer (`Engine=0`) and the small Cinemat, Console, and Audio block a working install uses. Folder paths and other sections stay. A backup is `RTKRONDOR.INI.launch-bak`. `Engine=1` with no Driver line is left alone, because the game already falls back to software. The bar also names a missing `ddraw.dll` (the display patch), a compatibility mode on `RtK.exe`, a period in a folder name, and a system-wide DEP policy. It does not turn compatibility mode on, and it does not install another graphics wrapper. The standalone installer does this in the same run as the folder paths: `Apply.bat` in https://github.com/RetroKevin/return-to-krondor-paths. After a Steam verify, `FixRtK.bat` in the game folder applies both again.
+- Conversation crash when a folder name contains a period. The engine cuts a path at the last period, so `GOG.com` makes a voice file resolve as `D:\GOG.trx`. Fix folder paths creates a junction with no period (`D:\RtK` on that drive) and points the ini at it. The game has to be started from that folder. Steam's Play button still starts the original path. Dialog data is not the source of the crash.
+- Text. Blurred or doubled letters are ClearType on the game surface. The display patch already forces those fonts to draw without smoothing (`anti_aliased_fonts_min_size=99`). GOG gets the same result by running `CT.exe off` around the game, which changes ClearType for the whole desktop. Combat text that is too large is a 12-point font sized from the Windows DPI, inside a 640x480 layout. Above 100% scaling it no longer fits the top bar or the hover HP. Replacing `Krondor.ttf` does not change the size. The launch bar names the current scaling. A crash leaves `Krondor.ttf` installed for every program, because the game only calls `RemoveFontResource` on a clean exit. The display launcher removes it when the process ends. `RestoreFonts.bat` does the same if the desktop is already stuck.

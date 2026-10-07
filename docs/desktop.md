@@ -2,8 +2,12 @@
 
 The studio is still the localhost viewer in [tools/viewer.py](../tools/viewer.py).
 The desktop program starts that server on `127.0.0.1` and opens it in a native
-window ([tools/desktop.py](../tools/desktop.py)). The game install stays
-read-only; edits go into a mod project.
+window ([tools/desktop.py](../tools/desktop.py)). Edits go into a mod project.
+The install is left unchanged, except two repairs that write
+`RTKRONDOR.INI` and keep a backup. **Fix folder paths** writes absolute
+paths when `[Directories]` entries are relative, missing, or contain a
+period in a folder name. **Repair launch settings** writes the software
+renderer when a hardware Driver guid is selected.
 
 ## Run from source
 
@@ -47,9 +51,9 @@ For a debug build that keeps a terminal, set `CONSOLE = True` at the top of
 ## Linux
 
 The published archive is built on Ubuntu 24.04 by
-`.github/workflows/linux.yml` and attached to the GitHub release as
-`RtKStudio-linux-x64.tar.gz`. It needs WebKitGTK 4.1 and glibc 2.39 or newer.
-`packaging/LINUX.txt` is the note packed next to the binary.
+`.github/workflows/linux.yml` in the public studio repo and attached to the
+GitHub release as `RtKStudio-linux-x64.tar.gz`. It needs WebKitGTK 4.1 and
+glibc 2.39 or newer.
 
 To build on the machine that will run it, including Ubuntu 22.04:
 

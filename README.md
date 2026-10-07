@@ -7,7 +7,8 @@ stores every change in a mod project of your own.
 The window is a set of studios: assets, characters, items, scenes, interface,
 dialog, combat, traps, effects, alchemy, and shops. A build writes a separate
 copy of the game with your edits applied. The install you started from is
-left untouched.
+left untouched, except **Fix folder paths** and **Repair launch settings**,
+which write `RTKRONDOR.INI` and keep a backup.
 
 ## Disclaimer
 
@@ -54,10 +55,10 @@ file inside it.
 Both builds are on the releases page of this same repository. The gold K
 with a wrench is the studio. It is the editor, not the game.
 
-**Windows.** Download `RtKStudio-1.1.1-windows.zip`, unpack it, and run
+**Windows.** Download `RtKStudio-1.2.0-windows.zip`, unpack it, and run
 `rtkstudio.exe`.
 
-**Linux.** Download `RtKStudio-1.1.1-linux-x64.tar.gz`, unpack it, and follow
+**Linux.** Download `RtKStudio-1.2.0-linux-x64.tar.gz`, unpack it, and follow
 `LINUX.txt` in that folder. In short:
 
 ```sh
