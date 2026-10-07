@@ -1,0 +1,54 @@
+name: Linux build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "tools/**"
+      - "packaging/**"
+      - "requirements-desktop.txt"
+      - ".github/workflows/linux.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install GTK and WebKit
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            gcc pkg-config \
+            libgirepository1.0-dev libcairo2-dev \
+            gir1.2-gtk-3.0 gir1.2-webkit2-4.1 \
+            python3-tk
+
+      - name: Install Python packages
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "PyGObject>=3.48"
+          python -m pip install -r requirements-desktop.txt
+          python -c "import gi; gi.require_version('Gtk', '3.0'); gi.require_version('WebKit2', '4.1'); from gi.repository import Gtk, WebKit2; import tkinter"
+
+      - name: Build
+        run: python -m PyInstaller packaging/rtkstudio.spec --noconfirm
+
+      - name: Check that the program starts
+        run: |
+          cp packaging/LINUX.txt dist/rtkstudio/LINUX.txt
+          dist/rtkstudio/rtkstudio --help
+
+      - name: Pack the archive
+        run: tar -C dist -czf RtKStudio-linux-x64.tar.gz rtkstudio
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RtKStudio-linux-x64
+          path: RtKStudio-linux-x64.tar.gz
+          if-no-files-found: error
